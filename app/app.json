@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "MacroLog+",
+    "slug": "macrolog-plus",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "at.fhcampuswien.macrologplus"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "at.fhcampuswien.macrologplus"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MacroLog+ ben\u00f6tigt die Kamera, um einen Teller f\u00fcr die N\u00e4hrwertsch\u00e4tzung zu fotografieren."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "MacroLog+ ben\u00f6tigt Zugriff auf deine Fotos, um ein Tellerfoto f\u00fcr die N\u00e4hrwertsch\u00e4tzung auszuw\u00e4hlen."
+        }
+      ]
+    ],
+    "scheme": "macrolog",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

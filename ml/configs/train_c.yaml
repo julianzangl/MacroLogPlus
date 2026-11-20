@@ -1,0 +1,15 @@
+# Training config variant C (HLD 3.5, 3.6). Only `variant` differs between A, B and C.
+variant: C
+data: configs/data.yaml
+seeds: [0, 1, 2, 3, 4]
+batch_size: 32
+max_epochs: 40
+head_only_epochs: 2
+optimizer:
+  name: adamw
+  lr_grid: [1.0e-4, 3.0e-4, 1.0e-3]
+  weight_decay: 1.0e-4
+  warmup_epochs: 1
+  schedule: cosine
+mixed_precision: true
+selection_metric: val_mae_energy_kcal

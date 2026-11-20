@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 413,
+    "message": "Datei größer als 10 MB",
+    "request_id": "3f9c2a7e-1b2c-4d5e-8f90-123456789abc"
+  }
+}

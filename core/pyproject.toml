@@ -1,0 +1,17 @@
+[project]
+name = "macrolog-core"
+version = "0.1.0"
+description = "MacroLog+ inference core: preprocessing, model, calibration (shared by inference service and ML pipeline, HLD 2.4)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy>=1.26",
+  "pillow>=10.4",
+  "pyyaml>=6.0",
+  "scipy>=1.13",
+  "torch>=2.4",
+  "torchvision>=0.19",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

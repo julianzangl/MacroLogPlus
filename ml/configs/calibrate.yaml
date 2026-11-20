@@ -1,0 +1,4 @@
+# Conformal calibration (HLD 3.8)
+coverage: 0.80
+knn_k: 10
+target_coverage_range: [0.75, 0.85]

@@ -1,0 +1,24 @@
+import type { EstimateResponse } from './types';
+
+/** Example response from HLD 5.2 – used when EXPO_PUBLIC_API_MOCK=1. */
+export const MOCK_ESTIMATE: EstimateResponse = {
+  request_id: '00000000-0000-0000-0000-000000000000',
+  model: { version: '0.0.0-mock', variant: 'B' },
+  coverage: 0.8,
+  estimate: {
+    mass_g: { value: 250, lower: 190, upper: 330 },
+    energy_kcal: { value: 500, lower: 380, upper: 650 },
+    fat_g: { value: 20, lower: 14, upper: 28 },
+    carbs_g: { value: 55, lower: 41, upper: 73 },
+    protein_g: { value: 25, lower: 18, upper: 34 },
+  },
+  per_gram: { energy_kcal: 2.0, fat_g: 0.08, carbs_g: 0.22, protein_g: 0.1 },
+  known_mass_factors: {
+    energy_kcal: { lower: 0.86, upper: 1.16 },
+    fat_g: { lower: 0.8, upper: 1.22 },
+    carbs_g: { lower: 0.84, upper: 1.18 },
+    protein_g: { lower: 0.83, upper: 1.2 },
+  },
+  confidence_level: 'mittel',
+  warnings: [],
+};

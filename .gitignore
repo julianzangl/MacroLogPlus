@@ -1,0 +1,49 @@
+# --- Agent instructions (local only, never commit) ---
+AGENTS.md
+CLAUDE.md
+.claude/
+
+# --- Project documents (local only: repository is public) ---
+docs/*.pdf
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+
+# --- ML data & artefacts (never in git, HLD 4.1) ---
+/data/
+ml/data/raw/
+runs/
+checkpoints/
+registry/
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.parquet
+wandb/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+deploy/.env
+
+# --- Node / Expo (see app/.gitignore) ---
+node_modules/
+
+# --- OS / IDE ---
+.DS_Store
+.idea/
+.vscode/
+*.swp

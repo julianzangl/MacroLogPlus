@@ -1,0 +1,44 @@
+# Project server (Intel N100, Ubuntu Server) – HLD 2.7, 7, 8.
+# Update: docker compose pull && docker compose up -d
+# Model switch: change MODEL_VERSION in .env and restart the container (no app update).
+
+services:
+  inference:
+    image: ghcr.io/julianzangl/macrolog-inference:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      REGISTRY_PATH: /registry
+      LOG_DIR: /logs
+    volumes:
+      - ${REGISTRY_DIR:-/srv/macrolog/registry}:/registry:ro
+      - ${LOG_VOLUME_DIR:-/srv/macrolog/logs}:/logs
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "10001:10001"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    deploy:
+      resources:
+        limits:
+          cpus: "3.5"
+          memory: 4g
+    healthcheck:
+      # TODO: decide whether /v1/health needs the API key from inside the container (FR-13)
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/v1/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    networks: [internal]
+
+  # Tunnel client: TLS terminates on the project server, no open router ports (HLD 2.7).
+  # TODO: configure Tailscale Funnel (or alternative) → reverse proxy to inference:8000
+  # tunnel:
+  #   image: tailscale/tailscale:stable
+  #   ...
+
+networks:
+  internal:
