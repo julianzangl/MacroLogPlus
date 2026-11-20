@@ -54,6 +54,8 @@ Kamera, SQLite und Sensoren brauchen einen Development Build (`npx expo run:ios|
 
 ## Arbeitsweise
 
+Details zu Branches, Commits, Reviews und Board: [CONTRIBUTING.md](CONTRIBUTING.md)
+
 - Änderungen über Pull Requests mit Review; CI muss grün sein.
 - Konfigurations-Freeze per Git-Tag `freeze-vX.Y`; erst danach wird der Testbestand ausgewertet.
 - Modelle nach Semantic Versioning im Modellregister, nie überschreiben.
