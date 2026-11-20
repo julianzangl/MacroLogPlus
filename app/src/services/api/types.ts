@@ -1,53 +1,32 @@
 /**
- * API contract of the inference service (HLD 5.2, SRS 2.3.5).
- * Must stay in sync with service/src/macrolog_service/schemas.py and
- * docs/api/estimate-response.example.json.
+ * API contract v1 (ADR 0001) – friendly aliases over the generated OpenAPI types.
+ *
+ * Never define API shapes by hand. To change the contract: edit
+ * service/src/macrolog_service/schemas.py, run
+ * `uv run python -m macrolog_service.openapi_export` and then `npm run gen:api`.
+ *
+ * Rules: the server only sends codes (confidence, warnings, problems) – all user-facing
+ * German texts live in the app. Ignore unknown fields and warning codes (tolerant reader).
  */
+import type { components } from './schema.gen';
 
-export type Variant = 'A' | 'B' | 'C';
-export type ConfidenceLevel = 'hoch' | 'mittel' | 'niedrig';
+type Schemas = components['schemas'];
 
-export type TotalTarget = 'energy_kcal' | 'fat_g' | 'carbs_g' | 'protein_g';
-export type Target = TotalTarget | 'mass_g';
+export type EstimateResponse = Schemas['EstimateResponse'];
+export type HealthResponse = Schemas['HealthResponse'];
+export type ModelInfoResponse = Schemas['ModelInfoResponse'];
+export type Problem = Schemas['Problem'];
+export type ProblemCode = Problem['code'];
 
-export interface Interval {
-  value: number;
-  lower: number;
-  upper: number;
-}
+export type Interval = Schemas['Interval'];
+export type FactorRange = Schemas['FactorRange'];
+export type Variant = Schemas['ModelRef']['variant'];
+export type ConfidenceLevel = EstimateResponse['confidence_level'];
+export type WarningCode = EstimateResponse['warnings'][number];
 
-export interface FactorRange {
-  lower: number;
-  upper: number;
-}
+export type Target = keyof Schemas['Estimate'];
+export type TotalTarget = keyof Schemas['PerGram'];
 
-export type EstimateWarning = 'unusual_image' | 'too_dark' | 'blurry' | 'implausible_values';
-
-export interface EstimateResponse {
-  request_id: string;
-  model: { version: string; variant: Variant };
-  coverage: number;
-  estimate: Record<Target, Interval>;
-  per_gram: Record<TotalTarget, number>;
-  known_mass_factors: Record<TotalTarget, FactorRange>;
-  confidence_level: ConfidenceLevel;
-  warnings: EstimateWarning[];
-}
-
-export interface HealthResponse {
-  status: 'ok' | 'loading';
-  model_version: string | null;
-}
-
-export interface ModelInfoResponse {
-  version: string;
-  variant: Variant;
-  trained_at: string;
-  validation_mae: Record<Target, number>;
-  coverage: number;
-  model_card_summary: string;
-}
-
-export interface ErrorResponse {
-  error: { code: number; message: string; request_id: string };
-}
+export const API_KEY_HEADER = 'X-API-Key';
+export const REQUEST_ID_HEADER = 'X-Request-ID';
+export const PROBLEM_MEDIA_TYPE = 'application/problem+json';

@@ -1,0 +1,683 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MacroLog+ Inferenzdienst",
+    "description": "API contract v1 between the MacroLog+ app and the inference service.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Model is loading",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/model": {
+      "get": {
+        "summary": "Model Info",
+        "operationId": "model_info_v1_model_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInfoResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/estimate": {
+      "post": {
+        "summary": "Estimate",
+        "operationId": "estimate_v1_estimate_post",
+        "requestBody": {
+          "description": "Raw JPEG bytes (no multipart), max. 10 MB, edges 224–4096 px",
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request Entity Too Large",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported Media Type",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CoverageInfo": {
+        "properties": {
+          "nominal": {
+            "type": "number",
+            "title": "Nominal"
+          },
+          "validation": {
+            "type": "number",
+            "title": "Validation",
+            "description": "Empirical coverage on the validation set"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "nominal",
+          "validation"
+        ],
+        "title": "CoverageInfo"
+      },
+      "DatasetInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "license": {
+            "type": "string",
+            "title": "License"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "data_version": {
+            "type": "string",
+            "title": "Data Version",
+            "description": "Short hash of the data manifest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "license",
+          "url",
+          "data_version"
+        ],
+        "title": "DatasetInfo"
+      },
+      "Estimate": {
+        "properties": {
+          "mass_g": {
+            "$ref": "#/components/schemas/Interval"
+          },
+          "energy_kcal": {
+            "$ref": "#/components/schemas/Interval"
+          },
+          "fat_g": {
+            "$ref": "#/components/schemas/Interval"
+          },
+          "carbs_g": {
+            "$ref": "#/components/schemas/Interval"
+          },
+          "protein_g": {
+            "$ref": "#/components/schemas/Interval"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mass_g",
+          "energy_kcal",
+          "fat_g",
+          "carbs_g",
+          "protein_g"
+        ],
+        "title": "Estimate"
+      },
+      "EstimateResponse": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "UUIDv4, also sent as X-Request-ID header"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelRef"
+          },
+          "coverage": {
+            "type": "number",
+            "title": "Coverage",
+            "description": "Nominal coverage of all intervals, e.g. 0.8"
+          },
+          "estimate": {
+            "$ref": "#/components/schemas/Estimate"
+          },
+          "per_gram": {
+            "$ref": "#/components/schemas/PerGram"
+          },
+          "known_mass_factors": {
+            "$ref": "#/components/schemas/KnownMassFactors"
+          },
+          "confidence_level": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Confidence Level"
+          },
+          "warnings": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "unusual_image",
+                "low_light",
+                "blurry",
+                "implausible_values"
+              ]
+            },
+            "type": "array",
+            "title": "Warnings",
+            "description": "Machine codes; clients must ignore unknown codes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "model",
+          "coverage",
+          "estimate",
+          "per_gram",
+          "known_mass_factors",
+          "confidence_level",
+          "warnings"
+        ],
+        "title": "EstimateResponse"
+      },
+      "FactorRange": {
+        "properties": {
+          "lower": {
+            "type": "number",
+            "title": "Lower"
+          },
+          "upper": {
+            "type": "number",
+            "title": "Upper"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lower",
+          "upper"
+        ],
+        "title": "FactorRange",
+        "description": "Multipliers for the interval when the mass is known: total × lower … total × upper."
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "loading"
+            ],
+            "title": "Status"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "model_version"
+        ],
+        "title": "HealthResponse"
+      },
+      "Interval": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "lower": {
+            "type": "number",
+            "title": "Lower"
+          },
+          "upper": {
+            "type": "number",
+            "title": "Upper"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "lower",
+          "upper"
+        ],
+        "title": "Interval",
+        "description": "Point estimate with 80 % prediction interval (unrounded, base units)."
+      },
+      "KnownMassFactors": {
+        "properties": {
+          "energy_kcal": {
+            "$ref": "#/components/schemas/FactorRange"
+          },
+          "fat_g": {
+            "$ref": "#/components/schemas/FactorRange"
+          },
+          "carbs_g": {
+            "$ref": "#/components/schemas/FactorRange"
+          },
+          "protein_g": {
+            "$ref": "#/components/schemas/FactorRange"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "energy_kcal",
+          "fat_g",
+          "carbs_g",
+          "protein_g"
+        ],
+        "title": "KnownMassFactors"
+      },
+      "ModelInfoResponse": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "variant": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "title": "Variant"
+          },
+          "trained_at": {
+            "type": "string",
+            "format": "date",
+            "title": "Trained At"
+          },
+          "dataset": {
+            "$ref": "#/components/schemas/DatasetInfo"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/CoverageInfo"
+          },
+          "validation_mae": {
+            "$ref": "#/components/schemas/TargetValues",
+            "description": "MAE on the validation set (g / kcal)"
+          },
+          "validation_mae_percent": {
+            "$ref": "#/components/schemas/TargetValues",
+            "description": "MAE relative to the mean reference value, as fraction (0.36 = 36 %)"
+          },
+          "model_card_summary": {
+            "type": "string",
+            "title": "Model Card Summary",
+            "description": "Short German summary, maintained by the ML team"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "variant",
+          "trained_at",
+          "dataset",
+          "coverage",
+          "validation_mae",
+          "validation_mae_percent",
+          "model_card_summary"
+        ],
+        "title": "ModelInfoResponse"
+      },
+      "ModelRef": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Semantic version of the active model"
+          },
+          "variant": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "title": "Variant"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "variant"
+        ],
+        "title": "ModelRef"
+      },
+      "PerGram": {
+        "properties": {
+          "energy_kcal": {
+            "type": "number",
+            "title": "Energy Kcal",
+            "description": "kcal per g"
+          },
+          "fat_g": {
+            "type": "number",
+            "title": "Fat G",
+            "description": "g per g"
+          },
+          "carbs_g": {
+            "type": "number",
+            "title": "Carbs G",
+            "description": "g per g"
+          },
+          "protein_g": {
+            "type": "number",
+            "title": "Protein G",
+            "description": "g per g"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "energy_kcal",
+          "fat_g",
+          "carbs_g",
+          "protein_g"
+        ],
+        "title": "PerGram"
+      },
+      "Problem": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "URI of the problem description (docs/api/problems.md)"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail",
+            "description": "Developer-facing only – never shown to users"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid_image",
+              "invalid_image_dimensions",
+              "unauthorized",
+              "not_found",
+              "method_not_allowed",
+              "payload_too_large",
+              "unsupported_media_type",
+              "validation_error",
+              "rate_limited",
+              "internal_error",
+              "model_unavailable"
+            ],
+            "title": "Code"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "code",
+          "request_id"
+        ],
+        "title": "Problem",
+        "description": "RFC 9457 problem details (media type application/problem+json)."
+      },
+      "TargetValues": {
+        "properties": {
+          "mass_g": {
+            "type": "number",
+            "title": "Mass G"
+          },
+          "energy_kcal": {
+            "type": "number",
+            "title": "Energy Kcal"
+          },
+          "fat_g": {
+            "type": "number",
+            "title": "Fat G"
+          },
+          "carbs_g": {
+            "type": "number",
+            "title": "Carbs G"
+          },
+          "protein_g": {
+            "type": "number",
+            "title": "Protein G"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "mass_g",
+          "energy_kcal",
+          "fat_g",
+          "carbs_g",
+          "protein_g"
+        ],
+        "title": "TargetValues"
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ]
+}

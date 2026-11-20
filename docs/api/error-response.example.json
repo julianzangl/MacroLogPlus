@@ -1,7 +1,8 @@
 {
-  "error": {
-    "code": 413,
-    "message": "Datei größer als 10 MB",
-    "request_id": "3f9c2a7e-1b2c-4d5e-8f90-123456789abc"
-  }
+  "type": "https://github.com/julianzangl/MacroLogPlus/blob/main/docs/api/problems.md#payload_too_large",
+  "title": "Payload too large",
+  "status": 413,
+  "detail": "Upload exceeds 10 MB",
+  "code": "payload_too_large",
+  "request_id": "3f9c2a7e-1b2c-4d5e-8f90-123456789abc"
 }

@@ -1,4 +1,8 @@
-"""Image quality warnings (HLD 3.8): too dark, blurry, implausible values (> 9 kcal/g)."""
+"""Image quality warnings (HLD 3.8, ADR 0001 §4).
+
+Warning codes: "low_light", "blurry", "implausible_values" (> 9 kcal/g); "unusual_image" comes
+from the calibration (σ(x) above the 95th validation percentile).
+"""
 
 from __future__ import annotations
 

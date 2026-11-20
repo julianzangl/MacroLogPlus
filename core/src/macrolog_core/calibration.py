@@ -24,7 +24,7 @@ class Calibration:
 
     q: dict[str, float]
     q_per_gram: dict[str, float]
-    confidence_thresholds: tuple[float, float]  # (hoch|mittel, mittel|niedrig)
+    confidence_thresholds: tuple[float, float]  # (high|medium, medium|low)
     sigma_p95: float  # warning "unusual_image" above this
     use_sigma: bool = True
 
@@ -49,4 +49,5 @@ def interval(value: float, q: float, sigma: float) -> tuple[float, float]:
 
 
 def confidence_level(lower: float, upper: float, value: float, thresholds) -> str:
+    """Return "high", "medium" or "low" (ADR 0001 §3)."""
     raise NotImplementedError
