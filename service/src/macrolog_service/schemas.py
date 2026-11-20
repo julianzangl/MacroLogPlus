@@ -1,86 +1,139 @@
-"""Pydantic response models = API contract (HLD 5.2).
+"""API contract v1 – single source of truth (ADR 0001, HLD 5.2).
 
-Keep in sync with app/src/services/api/types.ts and docs/api/*.example.json.
+FastAPI exports these models as OpenAPI 3.1 (docs/api/openapi.json); the app generates its
+TypeScript types from that file. Never edit app types by hand – change this module instead.
+Within v1 only additive changes are allowed.
 """
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 Variant = Literal["A", "B", "C"]
-ConfidenceLevel = Literal["hoch", "mittel", "niedrig"]
+ConfidenceLevel = Literal["high", "medium", "low"]
+WarningCode = Literal["unusual_image", "low_light", "blurry", "implausible_values"]
+HealthStatus = Literal["ok", "loading"]
+ProblemCode = Literal[
+    "invalid_image",
+    "invalid_image_dimensions",
+    "unauthorized",
+    "not_found",
+    "method_not_allowed",
+    "payload_too_large",
+    "unsupported_media_type",
+    "validation_error",
+    "rate_limited",
+    "internal_error",
+    "model_unavailable",
+]
 
 
-class IntervalOut(BaseModel):
+class _Model(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class Interval(_Model):
+    """Point estimate with 80 % prediction interval (unrounded, base units)."""
+
     value: float
     lower: float
     upper: float
 
 
-class FactorRangeOut(BaseModel):
+class FactorRange(_Model):
+    """Multipliers for the interval when the mass is known: total × lower … total × upper."""
+
     lower: float
     upper: float
 
 
-class ModelRef(BaseModel):
-    version: str
+class ModelRef(_Model):
+    version: str = Field(description="Semantic version of the active model")
     variant: Variant
 
 
-class EstimateOut(BaseModel):
-    mass_g: IntervalOut
-    energy_kcal: IntervalOut
-    fat_g: IntervalOut
-    carbs_g: IntervalOut
-    protein_g: IntervalOut
+class Estimate(_Model):
+    mass_g: Interval
+    energy_kcal: Interval
+    fat_g: Interval
+    carbs_g: Interval
+    protein_g: Interval
 
 
-class PerGramOut(BaseModel):
+class PerGram(_Model):
+    energy_kcal: float = Field(description="kcal per g")
+    fat_g: float = Field(description="g per g")
+    carbs_g: float = Field(description="g per g")
+    protein_g: float = Field(description="g per g")
+
+
+class KnownMassFactors(_Model):
+    energy_kcal: FactorRange
+    fat_g: FactorRange
+    carbs_g: FactorRange
+    protein_g: FactorRange
+
+
+class EstimateResponse(_Model):
+    request_id: str = Field(description="UUIDv4, also sent as X-Request-ID header")
+    model: ModelRef
+    coverage: float = Field(description="Nominal coverage of all intervals, e.g. 0.8")
+    estimate: Estimate
+    per_gram: PerGram
+    known_mass_factors: KnownMassFactors
+    confidence_level: ConfidenceLevel
+    warnings: list[WarningCode] = Field(
+        description="Machine codes; clients must ignore unknown codes"
+    )
+
+
+class HealthResponse(_Model):
+    status: HealthStatus
+    model_version: str | None
+
+
+class TargetValues(_Model):
+    mass_g: float
     energy_kcal: float
     fat_g: float
     carbs_g: float
     protein_g: float
 
 
-class KnownMassFactorsOut(BaseModel):
-    energy_kcal: FactorRangeOut
-    fat_g: FactorRangeOut
-    carbs_g: FactorRangeOut
-    protein_g: FactorRangeOut
+class DatasetInfo(_Model):
+    name: str
+    license: str
+    url: str
+    data_version: str = Field(description="Short hash of the data manifest")
 
 
-class EstimateResponse(BaseModel):
-    request_id: str
-    model: ModelRef
-    coverage: float
-    estimate: EstimateOut
-    per_gram: PerGramOut
-    known_mass_factors: KnownMassFactorsOut
-    confidence_level: ConfidenceLevel
-    warnings: list[str]
+class CoverageInfo(_Model):
+    nominal: float
+    validation: float = Field(description="Empirical coverage on the validation set")
 
 
-class HealthResponse(BaseModel):
-    status: Literal["ok", "loading"]
-    model_version: str | None
-
-
-class ModelInfoResponse(BaseModel):
+class ModelInfoResponse(_Model):
     version: str
     variant: Variant
-    trained_at: str
-    validation_mae: dict[str, float]
-    coverage: float
-    model_card_summary: str
+    trained_at: date
+    dataset: DatasetInfo
+    coverage: CoverageInfo
+    validation_mae: TargetValues = Field(description="MAE on the validation set (g / kcal)")
+    validation_mae_percent: TargetValues = Field(
+        description="MAE relative to the mean reference value, as fraction (0.36 = 36 %)"
+    )
+    model_card_summary: str = Field(description="Short German summary, maintained by the ML team")
 
 
-class ErrorBody(BaseModel):
-    code: int
-    message: str
+class Problem(BaseModel):
+    """RFC 9457 problem details (media type application/problem+json)."""
+
+    type: str = Field(description="URI of the problem description (docs/api/problems.md)")
+    title: str
+    status: int
+    detail: str = Field(description="Developer-facing only – never shown to users")
+    code: ProblemCode
     request_id: str
-
-
-class ErrorResponse(BaseModel):
-    error: ErrorBody

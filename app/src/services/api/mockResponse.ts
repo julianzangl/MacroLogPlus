@@ -19,6 +19,6 @@ export const MOCK_ESTIMATE: EstimateResponse = {
     carbs_g: { lower: 0.84, upper: 1.18 },
     protein_g: { lower: 0.83, upper: 1.2 },
   },
-  confidence_level: 'mittel',
+  confidence_level: 'medium',
   warnings: [],
 };

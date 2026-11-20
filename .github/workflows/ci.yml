@@ -21,7 +21,7 @@ jobs:
       - run: uv sync --frozen
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run pytest
+      - run: uv run pytest  # includes contract tests and the openapi.json up-to-date check
 
   app:
     name: App (eslint + tsc + jest)
@@ -37,6 +37,8 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
       - run: npm ci
+      - name: API types match docs/api/openapi.json
+        run: npm run gen:api && git diff --exit-code -- src/services/api/schema.gen.ts
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test -- --ci

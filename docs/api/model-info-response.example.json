@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "variant": "B",
+  "trained_at": "2026-12-10",
+  "dataset": {
+    "name": "Nutrition5k",
+    "license": "CC BY 4.0",
+    "url": "https://github.com/google-research-datasets/Nutrition5k",
+    "data_version": "a1b2c3d4"
+  },
+  "coverage": { "nominal": 0.8, "validation": 0.81 },
+  "validation_mae": {
+    "mass_g": 38.2,
+    "energy_kcal": 92.5,
+    "fat_g": 6.1,
+    "carbs_g": 9.8,
+    "protein_g": 7.4
+  },
+  "validation_mae_percent": {
+    "mass_g": 0.19,
+    "energy_kcal": 0.36,
+    "fat_g": 0.42,
+    "carbs_g": 0.39,
+    "protein_g": 0.37
+  },
+  "model_card_summary": "Beispielwerte – werden beim ersten Release durch echte Kennzahlen ersetzt."
+}

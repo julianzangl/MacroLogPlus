@@ -10,7 +10,8 @@ TOTAL_TARGETS: tuple[str, ...] = ("energy_kcal", "fat_g", "carbs_g", "protein_g"
 MASS_TARGET = "mass_g"
 ALL_TARGETS: tuple[str, ...] = (MASS_TARGET, *TOTAL_TARGETS)
 
-ConfidenceLevel = Literal["hoch", "mittel", "niedrig"]
+# language-neutral codes; the app renders "hoch/mittel/niedrig" (ADR 0001 §3)
+ConfidenceLevel = Literal["high", "medium", "low"]
 
 
 class Variant(StrEnum):

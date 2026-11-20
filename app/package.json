@@ -11,7 +11,8 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "check": "npm run lint && npm run typecheck && npm test",
+    "gen:api": "openapi-typescript ../docs/api/openapi.json -o src/services/api/schema.gen.ts"
   },
   "dependencies": {
     "expo": "~58.0.26",
@@ -38,6 +39,7 @@
     "eslint-config-expo": "~58.0.4",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.15",
+    "openapi-typescript": "~7.13.0",
     "typescript": "~6.0.3"
   },
   "jest": {
@@ -45,5 +47,10 @@
     "testPathIgnorePatterns": [
       "/node_modules/"
     ]
+  },
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
   }
 }

@@ -1,28 +1,30 @@
 /**
- * HTTP client for the inference service (HLD 4.2 steps 3 + 7, HLD 5.3).
+ * HTTP client for the inference service (HLD 4.2 steps 3 + 7, HLD 5.3, ADR 0001).
  *
  * - POST /v1/estimate with the raw JPEG body (not multipart), header X-API-Key
  * - timeout 15 s, then a user-facing error with a one-tap switch to manual entry (TS-05)
- * - maps HTTP status codes (400/401/413/415/429/503) to German messages
+ * - errors arrive as RFC 9457 problem details (application/problem+json); branch on `code`,
+ *   never show `detail`. Unknown codes → treat like 'internal_error' (tolerant reader).
+ * - 429/503 carry Retry-After (seconds); every response carries X-Request-ID
  */
-import type { EstimateResponse, HealthResponse, ModelInfoResponse } from './types';
+import type {
+  EstimateResponse,
+  HealthResponse,
+  ModelInfoResponse,
+  ProblemCode,
+} from './types';
 
 export const REQUEST_TIMEOUT_MS = 15_000;
 
-export type EstimateErrorKind =
-  | 'offline'
-  | 'timeout'
-  | 'bad_image'
-  | 'unauthorized'
-  | 'too_large'
-  | 'rate_limited'
-  | 'unavailable'
-  | 'unknown';
+/** Client-side failures plus the server's problem codes. German texts are mapped in the UI. */
+export type EstimateErrorKind = 'offline' | 'timeout' | 'invalid_response' | ProblemCode;
 
 export class EstimateError extends Error {
   constructor(
     public readonly kind: EstimateErrorKind,
     public readonly status?: number,
+    public readonly requestId?: string,
+    public readonly retryAfterS?: number,
   ) {
     super(kind);
   }
@@ -44,15 +46,15 @@ export function apiConfigFromEnv(): ApiConfig {
 
 export async function estimate(_jpegUri: string, _config = apiConfigFromEnv()): Promise<EstimateResponse> {
   // TODO: implement (FR-03, TS-05) – mock mode returns MOCK_ESTIMATE
-  throw new EstimateError('unknown');
+  throw new EstimateError('internal_error');
 }
 
 export async function health(_config = apiConfigFromEnv()): Promise<HealthResponse> {
   // TODO: implement GET /v1/health
-  throw new EstimateError('unknown');
+  throw new EstimateError('internal_error');
 }
 
 export async function modelInfo(_config = apiConfigFromEnv()): Promise<ModelInfoResponse> {
   // TODO: implement GET /v1/model (used by the "Über die KI-Schätzung" page)
-  throw new EstimateError('unknown');
+  throw new EstimateError('internal_error');
 }
